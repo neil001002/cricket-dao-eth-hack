@@ -98,6 +98,29 @@ header {
   cursor: not-allowed;
 }
 
+input {
+  border: 0;
+  border-radius: 12px;
+  background-color: black;
+  color: white;
+  letter-spacing: 1px;
+  font-size: 26px;
+  /* width: 400px; */
+  margin-bottom: 10px;
+  padding: 10px 20px;
+  text-align: center;
+  margin-right: 10px;
+}
+
+input::placeholder {
+  color: gray;
+  letter-spacing: 2px;
+}
+
+input:focus {
+  outline: none;
+}
+
 .footer-container {
   display: flex;
   justify-content: center;

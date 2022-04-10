@@ -1,6 +1,7 @@
 import "./styles/App.css";
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
+import CricketDaoNFT_ABI from "./utils/CricketDaoNFT_ABI.json";
 import twitterLogo from "./assets/twitter-logo.svg";
 import polygonLogo from "./assets/polygonlogo.png";
 import ethLogo from "./assets/ethlogo.png";
@@ -10,11 +11,12 @@ import DaoPage from "./components/DaoPage";
 // Constants
 const TWITTER_HANDLE = "neil001002";
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
-const CRICKET_DAO_NFT_CONTRACT = "0x90184415d82e2dA6c2947354d22f81F4cE0B92eF";
+const CRICKET_DAO_NFT_CONTRACT = "0xd146791DD95444385b0cff5E7552d1f8eaDFf960";
 
 function App() {
   const [network, setNetwork] = useState("");
   const [currentAccount, setCurrentAccount] = useState("");
+  const [isMember, setIsMember] = useState(false);
   const [nftId, setNsftId] = useState();
 
   const checkIfWalletIsConnected = async () => {
@@ -130,6 +132,27 @@ function App() {
     }
   };
 
+  if (currentAccount) {
+    balanceOf();
+  }
+
+  const mint = async (id) => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const contract = new ethers.Contract(CRICKET_DAO_NFT_CONTRACT, CricketDaoNFT_ABI.abi, signer);
+
+        let txn = await contract.claim(id);
+        await txn.wait();
+        console.log(`Minted NFT with ID ${id}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const renderDaoPage = () => {
     if (network !== "Polygon Mumbai Testnet") {
       return (
@@ -142,7 +165,21 @@ function App() {
         </div>
       );
     }
-    return <DaoPage />;
+    return (
+      <div>
+        {isMember === false ? (
+          <div>
+            <h2>You don't have any Membership NFT !!!</h2>
+            <input placeholder="Token ID" type="text" onChange={(e) => setNsftId(e.target.value)} />
+            <button className="cta-button connect-wallet-button" onClick={() => mint(nftId)}>
+              Mint
+            </button>
+          </div>
+        ) : (
+          <DaoPage />
+        )}
+      </div>
+    );
   };
 
   const renderNotConnectedContainer = () => (

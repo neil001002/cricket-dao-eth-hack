@@ -12,6 +12,26 @@ async function main() {
   const cricketDaoAddress = await deployCricketDAO(cricketDaoNftAddress, nftMarketplaceAddress);
 
   console.log(`Deployed CricketDAO contract at address: ${cricketDaoAddress}`);
+
+  if (process.env.ETHERSCAN_API_KEY) {
+    // Verify NFT contract on Etherscan
+    await run("verify:verify", {
+      address: cricketDaoNftAddress,
+      constructorArguments: [],
+    });
+
+    // Verify Marketplace contract on Etherscan
+    await run("verify:verify", {
+      address: nftMarketplaceAddress,
+      constructorArguments: [],
+    });
+
+    // Verify DAO contract on Etherscan
+    await run("verify:verify", {
+      address: cricketDaoAddress,
+      constructorArguments: [cricketDaoNftAddress, nftMarketplaceAddress],
+    });
+  }
 }
 
 async function deployCricketDAO(nftContract, marketplaceContract) {
